@@ -1,26 +1,27 @@
 import tkinter as tk
-#from physics_func import physics_function
+from physice_logic import *
+
 
 root = tk.Tk(screenName=None, baseName=None, className='Physics Simulation Tool', useTk=1)
 
-def physics_function():
-    mass_float = float(mass_doub.get())
-    high_float = float(hight_doub.get())
-    drag_co_float = float(drag_co_doub.get())
+def onclick():
+    mass_float = mass_doub.get()
+    high_float = hight_doub.get()
+    cross_sec_float = cross_sec_doub.get()
+    drag_co_float = drag_co_doub.get()
+    fluid_den_float = fluid_den_doub.get()
     
-    
-    
-    ans = mass_float+high_float+drag_co_float
+    time = time_calculate(high_float)
+    velocity = velocity_calculate(high_float)
+    air_resistance = air_resistance_calculate(fluid_den_float, velocity, drag_co_float, cross_sec_float)
 
+    output = tk.Label(root, text=f"เวลาที่ตกคือ {time.__round__(3)} m/s\nความเร็วคือ {velocity.__round__(3)} m/s\nแรงต้านอากาศ = {air_resistance.__round__(3)} N")
+    output.grid(row = 6, column=1)
 
-
-    output = tk.Label(root, text=ans)
-    output.grid(row = 6, column=0)
-
-mass_doub = tk.DoubleVar(value="") #mass
-hight_doub = tk.DoubleVar(value="") #initial high
-cross_sec_doub = tk.DoubleVar(value="") #cross sectional area
-drag_co_doub = tk.DoubleVar() #drag coefficient
+mass_doub = tk.DoubleVar(value=0.0) #mass
+hight_doub = tk.DoubleVar(value=0.0) #initial high
+cross_sec_doub = tk.DoubleVar(value=0.0) #cross sectional area
+drag_co_doub = tk.DoubleVar(value=0.0) #drag coefficient
 fluid_den_doub = tk.DoubleVar(value=1.225) #Fluid Density
 
 objects_value = {"ทรงกลม" : 0.47,
@@ -43,7 +44,7 @@ fluid_den_label = tk.Label(root, text="ความหนาแน่นขอ�
 fluid_den_entry = tk.Entry(root, textvariable= fluid_den_doub, font=('calibre',10, 'normal'))
 
 
-button = tk.Button(root, text="test", width=50, command=physics_function)
+button = tk.Button(root, text="test", width=50, command=onclick)
 
 
 mass_label.grid(row=0, column=0, sticky="e")
@@ -63,9 +64,10 @@ for i, (object_text,object_value) in enumerate(objects_value.items()):
     tk.Radiobutton(root, text=object_text, variable=drag_co_doub, value=object_value).grid(row=4, column=1+i, padx=1)
 
 
+#output_text = tk.Label(root, text="เวลาที่ใช้ตก", font=('calibre',10, 'bold'))
+#output_text.grid(row=6, column=0)
 
 
-
-button.grid(row=6, column=1)
+button.grid(row=7, column=2)
 
 root.mainloop()
