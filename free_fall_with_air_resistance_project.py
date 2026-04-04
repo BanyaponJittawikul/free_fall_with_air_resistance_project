@@ -4,44 +4,67 @@ from physice_logic import *
 
 root = tk.Tk(screenName=None, baseName=None, className='Physics Simulation Tool', useTk=1)
 
-def onclick():
-    mass_float = mass_doub.get()
-    high_float = hight_doub.get()
-    cross_sec_float = cross_sec_doub.get()
-    drag_co_float = drag_co_doub.get()
-    fluid_den_float = fluid_den_doub.get()
+def validate_float(new_value):
+    #ยอมให้เป็นค่าว่าง (เวลาลบทั้งหมด)
+    if new_value == "":
+        return True
     
-    time = time_calculate(high_float)
-    velocity = velocity_calculate(high_float)
-    air_resistance = air_resistance_calculate(fluid_den_float, velocity, drag_co_float, cross_sec_float)
+    #ยอมให้พิมพ์แค่จุดทศนิยมตัวเดียว (เผื่อกำลังจะพิมพ์ .5 , 0.)
+    if new_value == ".":
+        return True
 
-    output = tk.Label(root, text=f"เวลาที่ตกคือ {time.__round__(3)} m/s\nความเร็วคือ {velocity.__round__(3)} m/s\nแรงต้านอากาศ = {air_resistance.__round__(3)} N")
+    #ตรวจสอบว่าแปลงเป็นตัวเลขทศนิยมได้จริงไหม
+    try:
+        float(new_value)
+        return True
+    except ValueError:
+        return False
+
+vcmd = root.register(validate_float)
+
+def onclick():
+    mass_float = float(mass_doub.get())#มวล(m)
+    high_float = float(hight_doub.get())#ความสูง(h)
+    cross_sec_float = float(cross_sec_doub.get())#พื้นที่หน้าตัดของวัตถุ(A)
+    drag_co_float = float(drag_co_doub.get())#ความเพรียวลม(Cd)
+    fluid_den_float = float(fluid_den_doub.get())#ความหนาแน่นของอากาศ(p)
+    
+    time = time_calculate(high_float) #หาเวลาทั้งหมดจนกว่าจะตกถึงพื้น(t)
+    velocity = velocity_calculate(high_float) #หาความเร็ว(v)
+    gravitational_force = gravitational_force_calculate(mass_float)#หาแรงโน้มถ่วงตอนดึงวัตถุลง(mg)
+    air_resistance = air_resistance_calculate(fluid_den_float, velocity, drag_co_float, cross_sec_float)#หาแรงต้านอากาศ(Fd)
+    net_force = gravitational_force - air_resistance #หาแรงทั้งหมดที่กระทำกับวัตถุ(Fnet)
+    acceleration = accleration_calculate(mass_float, air_resistance) #หาความเร่ง ณ ขณะหนึ่ง(a)
+
+
+
+    output = tk.Label(root, text=f"เวลาที่ตกคือ {time.__round__(3)} m/s\nความเร็วคือ {velocity.__round__(3)} m/s\nแรงทั้งหมดที่กระทำกับวัตถุ = {net_force.__round__(3)} N")
     output.grid(row = 6, column=1)
 
-mass_doub = tk.DoubleVar(value=0.0) #mass
-hight_doub = tk.DoubleVar(value=0.0) #initial high
-cross_sec_doub = tk.DoubleVar(value=0.0) #cross sectional area
+mass_doub = tk.StringVar(value="0.0") #mass
+hight_doub = tk.StringVar(value="0.0") #initial high
+cross_sec_doub = tk.StringVar(value="0.0") #cross sectional area
 drag_co_doub = tk.DoubleVar(value=0.0) #drag coefficient
-fluid_den_doub = tk.DoubleVar(value=1.225) #Fluid Density
+fluid_den_doub = tk.StringVar(value="1.225") #Fluid Density
 
 objects_value = {"ทรงกลม" : 0.47,
                 "ทรงลูกบาศก์" : 1.05}
 
 
-mass_label = tk.Label(root, text="น้ำหนักวัตถุ", font=('calibre',10, 'bold'))
-mass_entry = tk.Entry(root, textvariable= mass_doub, font=('calibre',10, 'normal'))
+mass_label = tk.Label(root, text="น้ำหนักวัตถุ(kg)", font=('calibre',10, 'bold'))
+mass_entry = tk.Entry(root, textvariable= mass_doub, font=('calibre',10, 'normal'), validate='key', validatecommand=(vcmd, '%P'))
 
-high_label = tk.Label(root, text="ความสูงเริ่มต้นที่ปล่อยวัตถุ", font=('calibre',10, 'bold'))
-high_entry = tk.Entry(root, textvariable= hight_doub, font=('calibre',10, 'normal'))
+high_label = tk.Label(root, text="ความสูงเริ่มต้นที่ปล่อยวัตถุ(m)", font=('calibre',10, 'bold'))
+high_entry = tk.Entry(root, textvariable= hight_doub, font=('calibre',10, 'normal'), validate='key', validatecommand=(vcmd, '%P'))
 
-cross_sec_label = tk.Label(root, text="พื้นที่หน้าตัดของวัตถุที่ปะทะอากาศ", font=('calibre',10, 'bold'))
-cross_sec_entry = tk.Entry(root, textvariable= cross_sec_doub, font=('calibre',10, 'normal'))
+cross_sec_label = tk.Label(root, text="พื้นที่หน้าตัดของวัตถุที่ปะทะอากาศ(ตารางซม.)", font=('calibre',10, 'bold'))
+cross_sec_entry = tk.Entry(root, textvariable= cross_sec_doub, font=('calibre',10, 'normal'), validate='key', validatecommand=(vcmd, '%P'))
 
-drag_co_label = tk.Label(root, text="ค่าสัมประสิทธิ์แรงต้านอากาศ", font=('calibre',10, 'bold'))
+drag_co_label = tk.Label(root, text="ค่าสัมประสิทธิ์แรงต้านอากาศ(N)", font=('calibre',10, 'bold'))
 
 
-fluid_den_label = tk.Label(root, text="ความหนาแน่นของอากาศ", font=('calibre',10, 'bold'))
-fluid_den_entry = tk.Entry(root, textvariable= fluid_den_doub, font=('calibre',10, 'normal'))
+fluid_den_label = tk.Label(root, text="ความหนาแน่นของอากาศ(ibs)", font=('calibre',10, 'bold'))
+fluid_den_entry = tk.Entry(root, textvariable= fluid_den_doub, font=('calibre',10, 'normal'), validate='key', validatecommand=(vcmd, '%P'))
 
 
 button = tk.Button(root, text="test", width=50, command=onclick)
