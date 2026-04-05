@@ -3,6 +3,22 @@ from physice_logic import *
 
 
 root = tk.Tk(screenName=None, baseName=None, className='Physics Simulation Tool', useTk=1)
+mass_doub = tk.StringVar(value="0.0") #mass
+hight_doub = tk.StringVar(value="0.0") #initial high
+cross_sec_doub = tk.StringVar(value="0.0") #cross sectional area
+drag_co_doub = tk.DoubleVar(value=0.0) #drag coefficient
+fluid_den_doub = tk.StringVar(value="1.225") #Fluid Density
+
+objects_value = {"ทรงกลม" : 0.47,
+                "ทรงลูกบาศก์" : 1.05}
+
+time_list = []
+accleration_list = []
+velocity_list = []
+high_list = []
+net_force_list = []
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def validate_float(new_value):
     #ยอมให้เป็นค่าว่าง (เวลาลบทั้งหมด)
@@ -22,6 +38,8 @@ def validate_float(new_value):
 
 vcmd = root.register(validate_float)
 
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 def onclick():
     mass_float = float(mass_doub.get())#มวล(m)
     high_float = float(hight_doub.get())#ความสูง(h)
@@ -31,26 +49,48 @@ def onclick():
     
     time = time_calculate(high_float) #หาเวลาทั้งหมดจนกว่าจะตกถึงพื้น(t)
     velocity = velocity_calculate(high_float) #หาความเร็ว(v)
-    gravitational_force = gravitational_force_calculate(mass_float)#หาแรงโน้มถ่วงตอนดึงวัตถุลง(mg)
+    gravitational_force = gravitational_force_calculate(mass_float)#หาแรงโน้มถ่วงตอนดึงวัตถุลง(Fg)
     air_resistance = air_resistance_calculate(fluid_den_float, velocity, drag_co_float, cross_sec_float)#หาแรงต้านอากาศ(Fd)
     net_force = gravitational_force - air_resistance #หาแรงทั้งหมดที่กระทำกับวัตถุ(Fnet)
     acceleration = accleration_calculate(mass_float, air_resistance) #หาความเร่ง ณ ขณะหนึ่ง(a)
+    dt = 0.00
+    v = 0.00
+    h = 0.00
+
+    velocity_list.append(v)
+
+    while(high_float > 0):
+        time_list.append(dt)
+
+        
+        Fg = gravitational_force
+        Fd = air_resistance_calculate(fluid_den_float, v, drag_co_float, cross_sec_float)
+        Fnet = Fg - Fd
+        a = accleration_calculate(mass_float, Fnet)
+
+        velocity_list.append(Fnet)
+        v = v+(a * dt)
+
+        high_list.append(h)
+        h = h + (v * dt)
+
+        high_float = h
+        dt += 0.01
 
 
 
-    output = tk.Label(root, text=f"เวลาที่ตกคือ {time.__round__(3)} m/s\nความเร็วคือ {velocity.__round__(3)} m/s\nแรงทั้งหมดที่กระทำกับวัตถุ = {net_force.__round__(3)} N")
+
+
+    output = tk.Label(root, text=f"เวลาที่ตกคือ {time.__round__(3)} m/s\nความเร็วคือ {velocity.__round__(3)} m/s\nแรงทั้งหมดที่กระทำกับวัตถุ = {net_force.__round__(3)} N\n v {velocity_list}")
     output.grid(row = 6, column=1)
 
-mass_doub = tk.StringVar(value="0.0") #mass
-hight_doub = tk.StringVar(value="0.0") #initial high
-cross_sec_doub = tk.StringVar(value="0.0") #cross sectional area
-drag_co_doub = tk.DoubleVar(value=0.0) #drag coefficient
-fluid_den_doub = tk.StringVar(value="1.225") #Fluid Density
+    #print(f"time list {time_list}\nacclerationlist {accleration_list}\nvelocity list {velocity_list}\nhigh list {high_list}\nnet force {net_force_list}")
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-objects_value = {"ทรงกลม" : 0.47,
-                "ทรงลูกบาศก์" : 1.05}
+def plot_graph():
+    pass
 
-
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 mass_label = tk.Label(root, text="น้ำหนักวัตถุ(kg)", font=('calibre',10, 'bold'))
 mass_entry = tk.Entry(root, textvariable= mass_doub, font=('calibre',10, 'normal'), validate='key', validatecommand=(vcmd, '%P'))
 
@@ -92,5 +132,7 @@ for i, (object_text,object_value) in enumerate(objects_value.items()):
 
 
 button.grid(row=7, column=2)
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 root.mainloop()
