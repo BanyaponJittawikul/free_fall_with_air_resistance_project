@@ -1,6 +1,6 @@
 import tkinter as tk
 from physice_logic import *
-
+from time_step_func import *
 
 root = tk.Tk(screenName=None, baseName=None, className='Physics Simulation Tool', useTk=1)
 mass_doub = tk.StringVar(value="0.0") #mass
@@ -12,11 +12,11 @@ fluid_den_doub = tk.StringVar(value="1.225") #Fluid Density
 objects_value = {"ทรงกลม" : 0.47,
                 "ทรงลูกบาศก์" : 1.05}
 
-time_list = []
-accleration_list = []
-velocity_list = []
-high_list = []
-net_force_list = []
+#time_list = []
+#accleration_list = []
+#velocity_list = []
+#high_list = []
+#net_force_list = []
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -47,41 +47,28 @@ def onclick():
     drag_co_float = float(drag_co_doub.get())#ความเพรียวลม(Cd)
     fluid_den_float = float(fluid_den_doub.get())#ความหนาแน่นของอากาศ(p)
     
-    time = time_calculate(high_float) #หาเวลาทั้งหมดจนกว่าจะตกถึงพื้น(t)
-    velocity = velocity_calculate(high_float) #หาความเร็ว(v)
+    #time = time_calculate(high_float) #หาเวลาทั้งหมดจนกว่าจะตกถึงพื้น(t)
+    #velocity = velocity_calculate(high_float) #หาความเร็ว(v)
     gravitational_force = gravitational_force_calculate(mass_float)#หาแรงโน้มถ่วงตอนดึงวัตถุลง(Fg)
-    air_resistance = air_resistance_calculate(fluid_den_float, velocity, drag_co_float, cross_sec_float)#หาแรงต้านอากาศ(Fd)
-    net_force = gravitational_force - air_resistance #หาแรงทั้งหมดที่กระทำกับวัตถุ(Fnet)
-    acceleration = accleration_calculate(mass_float, air_resistance) #หาความเร่ง ณ ขณะหนึ่ง(a)
-    dt = 0.00
-    v = 0.00
-    h = 0.00
+    #air_resistance = air_resistance_calculate(fluid_den_float, velocity, drag_co_float, cross_sec_float)#หาแรงต้านอากาศ(Fd)
+    #net_force = gravitational_force - air_resistance #หาแรงทั้งหมดที่กระทำกับวัตถุ(Fnet)
+    #acceleration = accleration_calculate(mass_float, air_resistance) #หาความเร่ง ณ ขณะหนึ่ง(a)
+    
+    physics_dict = {"mass" : mass_float,
+                    "high" : high_float,
+                    "cross_sec" : cross_sec_float,
+                    "drag_co" : drag_co_float,
+                    "fluid_den" : fluid_den_float,
+                    "gravitational_force" : gravitational_force,
+                    }
+    
 
-    velocity_list.append(v)
-
-    while(high_float > 0):
-        time_list.append(dt)
-
-        
-        Fg = gravitational_force
-        Fd = air_resistance_calculate(fluid_den_float, v, drag_co_float, cross_sec_float)
-        Fnet = Fg - Fd
-        a = accleration_calculate(mass_float, Fnet)
-
-        velocity_list.append(Fnet)
-        v = v+(a * dt)
-
-        high_list.append(h)
-        h = h + (v * dt)
-
-        high_float = h
-        dt += 0.01
+    time_step(physics_dict)
 
 
 
 
-
-    output = tk.Label(root, text=f"เวลาที่ตกคือ {time.__round__(3)} m/s\nความเร็วคือ {velocity.__round__(3)} m/s\nแรงทั้งหมดที่กระทำกับวัตถุ = {net_force.__round__(3)} N\n v {velocity_list}")
+    output = tk.Label(root, text=f"net_force_list {time_step()["net_force_list"]}")
     output.grid(row = 6, column=1)
 
     #print(f"time list {time_list}\nacclerationlist {accleration_list}\nvelocity list {velocity_list}\nhigh list {high_list}\nnet force {net_force_list}")
