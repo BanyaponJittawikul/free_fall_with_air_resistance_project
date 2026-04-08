@@ -1,4 +1,4 @@
-# โปรแกรมคการจำลองการตกแบบอิสระโดยมีความต้านทานอากาศ (Free Fall with Air Resistance)
+# โปรแกรมคการจำลองการตกแบบอิสระโดยมีความต้านทานอากาศ (Free Fall with Air Resistance) (ยังไม่เสร็จ)
 มีไว้เพื่อการจำลองการตกแบบอิสระโดยมีความต้านทานอากาศ
 ใช้ library tkinter ในการรับ input-output
 คำนวนใน physics_logic.py
