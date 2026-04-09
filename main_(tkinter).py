@@ -1,4 +1,5 @@
 import tkinter as tk
+import threading
 from physice_logic import *
 from time_step_func import *
 
@@ -40,7 +41,7 @@ vcmd = root.register(validate_float)
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def onclick():
+def calculate():
     mass_float = float(mass_doub.get())#มวล(m)
     high_float = float(hight_doub.get())#ความสูง(h)
     cross_sec_float = float(cross_sec_doub.get())#พื้นที่หน้าตัดของวัตถุ(A)
@@ -68,10 +69,19 @@ def onclick():
 
 
 
-    output = tk.Label(root, text=f"net_force_list {time_step()["net_force_list"]}")
+    output = tk.Label(root, text=f"net_force_list {velocity_calculate(high_float)}") #time_step()["net_force_list"]
     output.grid(row = 6, column=1)
 
     #print(f"time list {time_list}\nacclerationlist {accleration_list}\nvelocity list {velocity_list}\nhigh list {high_list}\nnet force {net_force_list}")
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def onclick():
+    thread = threading.Thread(target=calculate)
+
+    thread.daemon = True
+    thread.start()
+
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def plot_graph():
