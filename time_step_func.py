@@ -7,32 +7,43 @@ def time_step(physics_dict):
     high_list = []
     net_force_list = []
 
-    dt = 0.00
+    #เก็บค่าที่ดึงมาแล้วไว้ในตัวแปร
+
+    m = physics_dict["mass"] #float(input("มวล (kg.) : ")) #มวล(m)
+    high = physics_dict["high"] #float(input("ความสูง (m.) : ")) #ความสูง(h)
+    A = physics_dict["cross_sec"] #float(input("พื้นที่หน้าตัดของวัตถุ (m2.) : ")) #พื้นที่หน้าตัดของวัตถุ(A)
+    Cd = physics_dict["drag_co"] #float(input("ความเพรียวลม (N.) : ")) #ความเพรียวลม(Cd)
+    p = physics_dict["fluid_den"] #float(input("ความหนาแน่นของอากาศ (kg/m^3.) : ")) #ความหนาแน่นของอากาศ(p)
+    Fg = physics_dict["gravitational_force"]
+
+    dt = 0.001
     v = 0.00
     h = 0.00
-    while(physics_dict['high'] > 0):
+    t = 0.00
 
-            
-        Fg = physics_dict['gravitational_force']
-        Fd = air_resistance_calculate(physics_dict['fluid_den'], v, physics_dict['drag_co'], physics_dict['cross_sec'])
+    #ลูปคำนวน time step ของ freefall
+    while(high > 0):
+        #Fg = gravitational_force
+        Fd = 0.5*p*(v**2)*Cd*A
         Fnet = Fg - Fd
+        a = ((m*9.81)-Fd)/m #accleration_calculate(mass_float, Fnet)
 
-        a = accleration_calculate(physics_dict['mass'], Fnet)
-
-        v = v+(a * dt)
+        v = v + (a * dt)
 
         h = h + (v * dt)
 
-        physics_dict['high'] = physics_dict['high'] - h
+        high = high - h
 
-        
+        #คำนวนค่าที่ต้องการแล้วเก็บไว้ใน list
+
         accleration_list.append(a.__round__(3))
         velocity_list.append(v.__round__(3))
         high_list.append(h.__round__(3))
         net_force_list.append(Fnet.__round__(3))
-        time_list.append(dt.__round__(3))
-        dt += 0.001
+        time_list.append(t.__round__(3))
 
+        #เพิ่มเวลาของ t ทีละ 0.001
+        t += dt
     
     #print(f"time list {time_list} จำนวน {len(time_list)}\nacclerationlist {accleration_list} จำนวน {len(accleration_list)}\nvelocity list {velocity_list} จำนวน {len(velocity_list)}\nhigh list {high_list} จำนวน {len(high_list)}\nnet force {net_force_list} จำนวน {len(net_force_list)}")
     return {"time_list" : time_list,

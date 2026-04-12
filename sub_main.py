@@ -6,7 +6,7 @@ from time_step_func import *
 
 mass_float = 10.0 #float(input("มวล (kg.) : ")) #มวล(m)
 high_float = 10.0 #float(input("ความสูง (m.) : ")) #ความสูง(h)
-cross_sec_float = 5.0 #float(input("พื้นที่หน้าตัดของวัตถุ (cm2.) : ")) #พื้นที่หน้าตัดของวัตถุ(A)
+cross_sec_float = 0.0005 #float(input("พื้นที่หน้าตัดของวัตถุ (m2.) : ")) #พื้นที่หน้าตัดของวัตถุ(A)
 drag_co_float = 0.47 #float(input("ความเพรียวลม (N.) : ")) #ความเพรียวลม(Cd)
 fluid_den_float = 1.225 #float(input("ความหนาแน่นของอากาศ (ibs.) : ")) #ความหนาแน่นของอากาศ(p)
     
@@ -26,6 +26,6 @@ physics_dict = {"mass" : mass_float,
                 }
     
 
-time_step(physics_dict)
+data = time_step(physics_dict)
 
-print(time_step()["time_list"])
+print(data["time_list"])
