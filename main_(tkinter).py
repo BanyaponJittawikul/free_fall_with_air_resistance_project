@@ -2,6 +2,9 @@ import tkinter as tk
 import threading
 from physice_logic import *
 from time_step_func import *
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+import numpy as np
 
 root = tk.Tk(screenName=None, baseName=None, className='Physics Simulation Tool', useTk=1)
 mass_doub = tk.StringVar(value="0.0") #mass
@@ -13,11 +16,11 @@ fluid_den_doub = tk.StringVar(value="1.225") #Fluid Density
 objects_value = {"ทรงกลม" : 0.47,
                 "ทรงลูกบาศก์" : 1.05}
 
-#time_list = []
-#accleration_list = []
-#velocity_list = []
-#high_list = []
-#net_force_list = []
+time_list = []
+accleration_list = []
+velocity_list = []
+high_list = []
+net_force_list = []
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -64,13 +67,32 @@ def calculate():
                     }
     
 
-    time_step(physics_dict)
+    all_data = time_step(physics_dict)
+
+    #time_list = all_data["time_list"]
+    #accleration_list = all_data["accleration_list"]
+    #velocity_list = all_data["velocity_list"]
+    #high_list = all_data["high_list"]
+    #net_force_list = all_data["net_force_list"]
+
+    fig = Figure(figsize=(5, 4), dpi=100)
+    plt = fig.add_subplot(111)
+
+    xplot = np.array(all_data["accleration_list"])
+    yplot = np.array(all_data["high_list"])
+
+    plt.plot(xplot, yplot)
+    plt.set_xlabel("accleration_list")
+    plt.set_ylabel("high_list")
 
 
+    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas.draw()
 
+    canvas.get_tk_widget().grid(row = 6, column=1)
 
-    output = tk.Label(root, text=f"net_force_list {velocity_calculate(high_float)}") #time_step()["net_force_list"]
-    output.grid(row = 6, column=1)
+    #output = tk.Label(root, text=f"net_force_list {all_data["net_force_list"]}") #time_step()["net_force_list"]
+    #output.grid()
 
     #print(f"time list {time_list}\nacclerationlist {accleration_list}\nvelocity list {velocity_list}\nhigh list {high_list}\nnet force {net_force_list}")
 
