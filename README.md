@@ -15,3 +15,6 @@
 
 
 submain มีไว้ทดลองดึงค่าจาก function โดยไม่ไปกระทบกับโปรแกรมหลัก
+
+
+![ตัวอย่างภาพ](<img width="1919" height="971" alt="Image" src="https://github.com/user-attachments/assets/6436bf6a-77a4-4539-9561-9f528b0cd122" />)
