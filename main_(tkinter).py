@@ -10,17 +10,23 @@ root = tk.Tk(screenName=None, baseName=None, className='Physics Simulation Tool'
 mass_doub = tk.StringVar(value="0.0") #mass
 hight_doub = tk.StringVar(value="0.0") #initial high
 cross_sec_doub = tk.StringVar(value="0.0") #cross sectional area
-drag_co_doub = tk.DoubleVar(value=0.0) #drag coefficient
+drag_co_doub = tk.StringVar(value='0.47') #drag coefficient
 fluid_den_doub = tk.StringVar(value="1.225") #Fluid Density
+x_axis_value = tk.StringVar(value="time_list") #x axis
+y_axis_value = tk.StringVar(value="time_list") #y axis
+
 
 objects_value = {"ทรงกลม" : 0.47,
                 "ทรงลูกบาศก์" : 1.05}
 
-time_list = []
-accleration_list = []
-velocity_list = []
-high_list = []
-net_force_list = []
+
+plot_graph_value = {"time list" : "time_list",
+            "accleration list" : "accleration_list",
+            "velocity list" : "velocity_list",
+            "high list" : "high_list",
+            "net force list" : "net_force_list"}
+
+
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -69,32 +75,19 @@ def calculate():
 
     all_data = time_step(physics_dict)
 
-    #time_list = all_data["time_list"]
-    #accleration_list = all_data["accleration_list"]
-    #velocity_list = all_data["velocity_list"]
-    #high_list = all_data["high_list"]
-    #net_force_list = all_data["net_force_list"]
 
-    fig = Figure(figsize=(5, 4), dpi=100)
-    plt = fig.add_subplot(111)
-
-    xplot = np.array(all_data["accleration_list"])
-    yplot = np.array(all_data["high_list"])
-
-    plt.plot(xplot, yplot)
-    plt.set_xlabel("accleration_list")
-    plt.set_ylabel("high_list")
-
-
-    canvas = FigureCanvasTkAgg(fig, master=root)
-    canvas.draw()
-
-    canvas.get_tk_widget().grid(row = 6, column=1)
-
-    #output = tk.Label(root, text=f"net_force_list {all_data["net_force_list"]}") #time_step()["net_force_list"]
-    #output.grid()
+    output = tk.Label(root, text=f"คำนวนเรียบร้อย") #time_step()["net_force_list"]
+    output.grid(row=5, column=2)
+    
 
     #print(f"time list {time_list}\nacclerationlist {accleration_list}\nvelocity list {velocity_list}\nhigh list {high_list}\nnet force {net_force_list}")
+
+    return {"time_list" : all_data["time_list"],
+            "accleration_list" : all_data["accleration_list"],
+            "velocity_list" : all_data["velocity_list"],
+            "high_list" : all_data["high_list"],
+            "net_force_list" : all_data["net_force_list"]}
+
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -106,8 +99,71 @@ def onclick():
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+#list for plot graph
+
+
+
+
 def plot_graph():
-    pass
+    all_list_data = calculate()
+    x_axis = x_axis_value.get()
+    y_axis = y_axis_value.get()
+
+    match x_axis:
+        case "time_list":
+            x_axis_text = "time"
+            x_axis_plot = all_list_data["time_list"]
+        case "accleration_list":
+            x_axis_text = "accleration"
+            x_axis_plot = all_list_data["accleration_list"]
+        case "velocity_list":
+            x_axis_text = "velocity"
+            x_axis_plot = all_list_data["velocity_list"]
+        case "high_list":
+            x_axis_text = "high"
+            x_axis_plot = all_list_data["high_list"]
+        case "net_force_list":
+            x_axis_text = "net force"
+            x_axis_plot = all_list_data["net_force_list"]
+
+
+    match y_axis:
+        case "time_list":
+            y_axis_text = "time"
+            y_axis_plot = all_list_data["time_list"]
+        case "accleration_list":
+            y_axis_text = "accleration"
+            y_axis_plot = all_list_data["accleration_list"]
+        case "velocity_list":
+            y_axis_text = "velocity"
+            y_axis_plot = all_list_data["velocity_list"]
+        case "high_list":
+            y_axis_text = "high"
+            y_axis_plot = all_list_data["high_list"]
+        case "net_force_list":
+            y_axis_text = "net force"
+            y_axis_plot = all_list_data["net_force_list"]
+
+
+
+
+    fig = Figure(figsize=(5, 4), dpi=100)
+    plt = fig.add_subplot(111)
+
+    xplot = np.array(x_axis_plot)
+    yplot = np.array(y_axis_plot)
+
+    plt.plot(xplot, yplot)
+    plt.set_xlabel(x_axis_text)
+    plt.set_ylabel(y_axis_text)
+
+
+    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas.draw()
+
+    canvas.get_tk_widget().grid(row = 6, column=1)
+
+    
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 mass_label = tk.Label(root, text="น้ำหนักวัตถุ(kg)", font=('calibre',10, 'bold'))
@@ -126,7 +182,15 @@ fluid_den_label = tk.Label(root, text="ความหนาแน่นขอ�
 fluid_den_entry = tk.Entry(root, textvariable= fluid_den_doub, font=('calibre',10, 'normal'), validate='key', validatecommand=(vcmd, '%P'))
 
 
-button = tk.Button(root, text="test", width=50, command=onclick)
+plot_lable_x = tk.Label(root, text="กราฟแกน x", font=('calibre',10, 'bold'))
+
+
+plot_lable_y = tk.Label(root, text="กราฟแกน y", font=('calibre',10, 'bold'))
+
+
+button = tk.Button(root, text="calculate list", width=50, command=onclick)
+
+plot_graph_button = tk.Button(root, text="plot", width=50, command=plot_graph)
 
 
 mass_label.grid(row=0, column=0, sticky="e")
@@ -142,15 +206,40 @@ fluid_den_label.grid(row=3, column=0, sticky="e")
 fluid_den_entry.grid(row=3, column=1)
 
 drag_co_label.grid(row=4, column=0, sticky="e")
+drag_co_label_containner = tk.Frame(root)
+drag_co_label_containner.grid(row=4, column=1, padx=1)
+
 for i, (object_text,object_value) in enumerate(objects_value.items()):
-    tk.Radiobutton(root, text=object_text, variable=drag_co_doub, value=object_value).grid(row=4, column=1+i, padx=1)
+    drag_co_rb = tk.Radiobutton(drag_co_label_containner, text=object_text, variable=drag_co_doub, value=object_value)
+    drag_co_rb.pack(anchor="w")
+
+
+plot_lable_x.grid(row = 0, column=3, sticky="e")
+x_axis_containner = tk.Frame(root)
+x_axis_containner.grid(row = 1, column = 3)
+
+
+for x, (x_graph_text, x_graph_value) in enumerate(plot_graph_value.items()):
+    x_axis_rb = tk.Radiobutton(x_axis_containner, text=x_graph_text, variable=x_axis_value, value=x_graph_value)
+    x_axis_rb.pack(anchor="w")
+
+
+plot_lable_y.grid(row = 0, column=4, sticky="e")
+y_axis_containner = tk.Frame(root)
+y_axis_containner.grid(row = 1, column = 4)
+
+for y, (y_graph_text, y_graph_value) in enumerate(plot_graph_value.items()):
+    y_axis_rb = tk.Radiobutton(y_axis_containner, text=y_graph_text, variable=y_axis_value, value=y_graph_value)
+    y_axis_rb.pack(anchor="w")
 
 
 #output_text = tk.Label(root, text="เวลาที่ใช้ตก", font=('calibre',10, 'bold'))
 #output_text.grid(row=6, column=0)
 
 
-button.grid(row=7, column=2)
+button.grid(row=5, column=0)
+plot_graph_button.grid(row=5, column=1)
+
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

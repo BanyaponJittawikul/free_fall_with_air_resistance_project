@@ -28,4 +28,17 @@ physics_dict = {"mass" : mass_float,
 
 data = time_step(physics_dict)
 
-print(data["time_list"])
+#print(data["time_list"])
+
+def list1():
+    list1_data = time_step(physics_dict)
+    return list1_data
+
+def list2():
+    list2_data = list1()
+    for i in list2_data:
+        print(i)
+
+    print(list2_data["time_list"])
+
+list2()
