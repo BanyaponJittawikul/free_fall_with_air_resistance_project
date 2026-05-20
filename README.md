@@ -14,7 +14,5 @@
 โปรแกรมหลัก run ใน main_(tkinter)
 
 
-submain มีไว้ทดลองคำนวนและดึงค่าจาก function โดยไม่ไปกระทบกับโปรแกรมหลัก
-
 
 ![ตัวอย่างภาพ](https://github.com/user-attachments/assets/6436bf6a-77a4-4539-9561-9f528b0cd122)
